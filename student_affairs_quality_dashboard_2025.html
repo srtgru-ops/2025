@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>لوحة وحدة التطوير والجودة — شؤون الطلاب 2025</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --green:#1B4D3E;
+      --green-2:#2F6F58;
+      --green-pale:#E6EEE9;
+      --gold:#C9A227;
+      --gold-pale:#F5EACB;
+      --brown:#8B5A2B;
+      --brown-pale:#F1E4D5;
+      --cream:#FBF7EF;
+      --card:#FFFFFF;
+      --ink:#23261F;
+      --muted:#6E7268;
+      --line:#E6E1D6;
+      --danger:#B5563A;
+      --shadow:0 14px 35px rgba(27,77,62,.08);
+      --sidebar:#1B4D3E;
+      --tooltip:#23261F;
+      --tooltipText:#FBF7EF;
+    }
+    body.dark{
+      --green:#7AC5A5;
+      --green-2:#58A889;
+      --green-pale:#193329;
+      --gold:#E0C15B;
+      --gold-pale:#3A3218;
+      --brown:#D09A62;
+      --brown-pale:#382617;
+      --cream:#0E1512;
+      --card:#17221D;
+      --ink:#F4F0E8;
+      --muted:#B9B3A8;
+      --line:#2B3932;
+      --danger:#D37A60;
+      --shadow:0 18px 45px rgba(0,0,0,.25);
+      --sidebar:#101D18;
+      --tooltip:#F4F0E8;
+      --tooltipText:#0E1512;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--cream);
+      color:var(--ink);
+      font-family:'Cairo',sans-serif;
+      transition:background .25s,color .25s;
+    }
+    button{font-family:inherit}
+    .app{min-height:100%;display:flex;}
+    .sidebar{
+      width:250px;
+      flex:0 0 250px;
+      background:linear-gradient(180deg,var(--sidebar),#12362b);
+      border-left:1px solid rgba(255,255,255,.08);
+      padding:18px 14px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      box-shadow:-10px 0 30px rgba(0,0,0,.04) inset;
+    }
+    .brand{padding:14px 10px 18px;margin-bottom:6px;}
+    .brand h1{margin:0;color:white;font:900 22px/1.35 'Tajawal',sans-serif;letter-spacing:-.3px;}
+    .brand p{margin:6px 0 0;color:var(--gold-pale);font-size:12px;}
+    .nav{display:flex;flex-direction:column;gap:7px;}
+    .nav button,.mobile-nav button{
+      border:0;
+      cursor:pointer;
+      text-align:right;
+      border-radius:16px;
+      color:#F7F3E8;
+      background:transparent;
+      padding:12px 12px;
+      font-weight:800;
+      font-size:14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition:.18s ease;
+      width:100%;
+    }
+    .nav button:hover{background:rgba(255,255,255,.08)}
+    .nav button.active,.mobile-nav button.active{background:var(--gold);color:#241f12;box-shadow:0 9px 22px rgba(201,162,39,.22);}
+    .nav .ico{width:25px;height:25px;border-radius:11px;display:inline-grid;place-items:center;background:rgba(255,255,255,.12);font-size:14px;}
+    .nav button.active .ico{background:rgba(255,255,255,.24)}
+    .main{flex:1;padding:28px 30px 34px;min-width:0;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px;}
+    .page-title h2{margin:0;color:var(--green);font:900 34px/1.15 'Tajawal',sans-serif;letter-spacing:-.5px;}
+    .page-title p{margin:7px 0 0;color:var(--muted);font-size:14px;}
+    .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .pill{padding:8px 14px;border-radius:999px;background:var(--gold-pale);color:var(--brown);font-size:12px;font-weight:800;border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);}
+    .theme-toggle{
+      border:1px solid var(--line);
+      background:var(--card);
+      color:var(--ink);
+      padding:9px 13px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:900;
+      box-shadow:var(--shadow);
+    }
+    .section{display:none;animation:fade .24s ease;}
+    .section.active{display:block;}
+    @keyframes fade{from{opacity:.55;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .stack{display:flex;flex-direction:column;gap:18px;}
+    .grid{display:grid;gap:18px;}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:15px;}
+    .kpi,.panel,.insight,.note{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+    }
+    .kpi{padding:18px 18px 16px;border-top:5px solid var(--accent,var(--green));min-height:112px;}
+    .kpi .label{color:var(--muted);font-size:13px;font-weight:700;}
+    .kpi .value{font:900 33px/1.25 'Tajawal',sans-serif;color:var(--ink);margin-top:5px;letter-spacing:-.3px;}
+    .kpi .sub{font-size:12px;color:var(--accent,var(--green));font-weight:800;margin-top:4px;}
+    .panel{padding:20px;min-width:0;}
+    .panel h3{margin:0 0 14px;font:900 18px/1.4 'Tajawal',sans-serif;color:var(--ink);}
+    .panel .hint{margin:-6px 0 12px;color:var(--muted);font-size:12px;}
+    .chart{height:286px;position:relative;}
+    .chart.small{height:245px;}
+    .chart.tall{height:330px;}
+    .insight{padding:16px 18px;display:flex;gap:12px;align-items:flex-start;background:var(--green-pale);border-right:5px solid var(--green);box-shadow:none;}
+    .insight strong{color:var(--green)}
+    .insight .tag{font:900 13px 'Tajawal',sans-serif;color:var(--green);white-space:nowrap;padding-top:2px;}
+    .insight .text{font-size:14px;line-height:1.9;color:var(--ink);}
+    .note{padding:16px;background:var(--brown-pale);border-right:5px solid var(--brown);box-shadow:none;color:var(--ink);font-size:14px;line-height:1.8;}
+    .necklace-wrap{overflow:auto;padding:8px 0 0;}
+    .necklace{min-width:610px;width:100%;height:118px;}
+    .location-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+    .chip{border:1px solid var(--green);background:var(--green-pale);color:var(--green);font-size:12px;font-weight:900;border-radius:999px;padding:7px 12px;cursor:pointer;}
+    .chip.active{background:var(--green);color:var(--cream)}
+    .quality-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:12px;}
+    .gauge{padding:14px 10px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--card) 92%,var(--green-pale)),var(--card));text-align:center;}
+    .dial{width:86px;height:86px;border-radius:50%;margin:0 auto 9px;display:grid;place-items:center;background:conic-gradient(var(--gcolor) calc(var(--score) * 20%),var(--line) 0);position:relative;}
+    .dial:before{content:"";position:absolute;width:64px;height:64px;background:var(--card);border-radius:50%;}
+    .dial b{position:relative;font:900 21px 'Tajawal',sans-serif;color:var(--ink)}
+    .gauge span{display:block;color:var(--muted);font-size:12px;line-height:1.55;font-weight:700;}
+    .metric-strip{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));gap:10px;margin-top:14px;}
+    .mini{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:10px;text-align:center;}
+    .mini b{display:block;font:900 17px 'Tajawal',sans-serif;color:var(--green)}
+    .mini span{font-size:11px;color:var(--muted);font-weight:700;}
+    .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sidebar);padding:9px;z-index:20;gap:6px;overflow:auto;border-top:1px solid rgba(255,255,255,.1);}
+    .mobile-nav button{width:auto;white-space:nowrap;padding:9px 13px;font-size:12px;}
+    footer{color:var(--muted);font-size:11px;text-align:left;margin-top:22px;}
+    @media (max-width:1100px){
+      .kpis{grid-template-columns:repeat(2,minmax(160px,1fr));}
+      .grid.three{grid-template-columns:1fr;}
+      .quality-grid{grid-template-columns:repeat(3,minmax(120px,1fr));}
+      .metric-strip{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width:780px){
+      .app{display:block;}
+      .sidebar{display:none;}
+      .mobile-nav{display:flex;}
+      .main{padding:20px 14px 88px;}
+      .page-title h2{font-size:27px;}
+      .grid.two{grid-template-columns:1fr;}
+      .kpis{grid-template-columns:1fr;}
+      .quality-grid{grid-template-columns:repeat(2,minmax(120px,1fr));}
+      .chart{height:265px;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>وحدة التطوير والجودة</h1>
+      <p>شؤون الطلاب — الملخص التنفيذي 2025</p>
+    </div>
+    <nav class="nav" id="desktopNav"></nav>
+  </aside>
+
+  <nav class="mobile-nav" id="mobileNav"></nav>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="page-title">
+        <h2 id="pageTitle">نظرة عامة</h2>
+        <p>العام الأكاديمي 2025 · جامعة تبوك</p>
+      </div>
+      <div class="actions">
+        <button class="theme-toggle" id="themeToggle">🌙 الوضع الداكن</button>
+        <div class="pill">التقرير السنوي 2025</div>
+      </div>
+    </div>
+
+    <section id="overview" class="section active">
+      <div class="stack">
+        <div class="panel">
+          <h3 style="color:var(--green);font-size:25px;margin-bottom:2px">شبكة الوحدة عبر مواقع منطقة تبوك</h3>
+          <div class="hint">حجم الدوائر يعكس حجم التفاعل الفعلي المسجل في بيانات الإرشاد المهني بكل موقع</div>
+          <div class="necklace-wrap">
+            <svg class="necklace" viewBox="0 0 760 118" preserveAspectRatio="xMidYMid meet" id="necklaceSvg"></svg>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">إجمالي طلاب المنح</div><div class="value">1,515</div><div class="sub">65.3% داخلية</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">جولات تفتيش التغذية</div><div class="value">164</div><div class="sub">عبر 8 مواقع</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">مسجلو مركز محترف</div><div class="value">196</div><div class="sub">17 برنامجًا تدريبيًا</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">ساعات الإرشاد المهني</div><div class="value">30,395</div><div class="sub">2,759 سجل حضور</div></div>
+        </div>
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">خريجون التحقوا بسوق العمل</div><div class="value">2,543</div><div class="sub">27.3% من 9,322 خريجًا</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">ساعات استبقاء الطلاب</div><div class="value">199.5</div><div class="sub">83 نشاطًا</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">طلبات الأنشطة الطلابية</div><div class="value">1,147</div><div class="sub">851 مستفيدًا فريدًا</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">متطوعون</div><div class="value">2,628</div><div class="sub">49,625 ساعة تطوعية</div></div>
+        </div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">المنح والإرشاد المهني والأنشطة الطلابية تتركّز جغرافيًا في تبوك بشكل كبير، بينما تحافظ الوحدة على حضور فعلي — وإن كان أصغر — في الجامعية بأملج والوجه وتيماء، ما يشير إلى فرصة لتوسيع تغطية الخدمات في المواقع الأقل تمثيلًا مثل حقل والبدع.</div></div>
+      </div>
+    </section>
+
+    <section id="scholarships" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">إجمالي طلاب المنح</div><div class="value">1,515</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">منح داخلية</div><div class="value">990</div><div class="sub">65.3%</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">منح خارجية</div><div class="value">525</div><div class="sub">34.7%</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">نسبة المتعثرين</div><div class="value">23.8%</div><div class="sub">360 طالبًا</div></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><h3>توزيع المنح حسب المصدر</h3><div class="chart"><canvas id="schOrigin"></canvas></div></div>
+          <div class="panel"><h3>مسار حالة طلاب المنح</h3><div class="chart"><canvas id="schStatus"></canvas></div></div>
+        </div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">قرابة ربع طلاب المنح <strong>23.8%</strong> مصنّفون «متعثرون»، وهي شريحة تستحق متابعة أقرب من وحدة الإرشاد المهني والاستبقاء، بينما لا يزال الطلاب المنتظمون يشكلون الحصة الأكبر عند <strong>45.8%</strong>.</div></div>
+      </div>
+    </section>
+
+    <section id="catering" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">جولات التفتيش</div><div class="value">164</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">المواقع المشمولة</div><div class="value">8</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">مطابقة الأسعار للمنيو</div><div class="value">100%</div></div>
+          <div class="kpi" style="--accent:var(--danger)"><div class="label">أقل مؤشر جودة</div><div class="value">3.91</div><div class="sub">نظافة المستودع</div></div>
+        </div>
+        <div class="panel"><h3>مؤشرات جودة الإعاشة (من 5)</h3><div class="quality-grid" id="qualityGrid"></div></div>
+        <div class="panel"><h3>مؤشرات الامتثال (%)</h3><div class="chart"><canvas id="cateringCompliance"></canvas></div></div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">نظافة المستودعات <strong>3.91/5</strong> هي الأضعف بين مؤشرات الجودة الست، بينما تسجّل جولات رصد مخالفات المتعهدين نسبة منخفضة نسبيًا <strong>16.5%</strong>، وهو ما يستدعي مراجعة معايير التخزين تحديدًا في الجولات القادمة.</div></div>
+      </div>
+    </section>
+
+    <section id="training" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">البرامج التدريبية</div><div class="value">17</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">إجمالي المسجلين</div><div class="value">196</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">برامج منتهية</div><div class="value">9</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">مسجلون ببرامج لم تبدأ</div><div class="value">45</div></div>
+        </div>
+        <div class="grid three">
+          <div class="panel"><h3>حالة البرامج</h3><div class="chart small"><canvas id="trainingPrograms"></canvas></div></div>
+          <div class="panel"><h3>توزيع المسجلين</h3><div class="chart small"><canvas id="trainingRegistrants"></canvas></div></div>
+          <div class="panel"><h3>المؤهل العلمي للمسجلين</h3><div class="chart small"><canvas id="trainingQualification"></canvas></div></div>
+        </div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">نصف البرامج تقريبًا <strong>8 من 17</strong> لم تبدأ بعد رغم أنها تضم <strong>45 مسجلاً</strong> بالفعل، وهو ما يمثل طاقة مؤجلة يمكن تفعيلها لرفع معدل استفادة المسجلين قبل نهاية العام.</div></div>
+      </div>
+    </section>
+
+    <section id="career" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">سجلات الحضور</div><div class="value">2,759</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">تكرار الخدمة</div><div class="value">1,253</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">ساعات الإرشاد</div><div class="value">30,395</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">أعلى موقع</div><div class="value">تبوك</div><div class="sub">2,399 سجلًا</div></div>
+        </div>
+        <div class="panel"><h3>التغطية الجغرافية — اختر موقعًا</h3><div class="location-buttons" id="locationButtons"></div><div class="chart tall"><canvas id="careerLocations"></canvas></div></div>
+        <div class="grid two">
+          <div class="panel"><h3>التوزيع حسب الجنس</h3><div class="chart small"><canvas id="careerGender"></canvas></div></div>
+          <div class="panel"><h3>فئات المستفيدين</h3><div class="chart small"><canvas id="careerBeneficiaries"></canvas></div></div>
+        </div>
+        <div class="panel"><h3>أكثر المواضيع طلبًا</h3><div class="chart"><canvas id="careerTopics"></canvas></div></div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">87% تقريبًا من إجمالي المستفيدين طلاب وخريجون، فيما لا تتجاوز حصة الكادر الإداري والتعليمي 3%، ما يؤكد أن الخدمة مصممة بالدرجة الأولى حول الجاهزية الوظيفية للطلاب. كما تستحوذ تبوك وحدها على 87% من سجلات الحضور.</div></div>
+      </div>
+    </section>
+
+    <section id="employment" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">إجمالي الخريجين</div><div class="value">9,322</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">التحقوا بسوق العمل</div><div class="value">2,543</div><div class="sub">27.3%</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">خلال 6 أشهر أو قبلها</div><div class="value">70.5%</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">أكثر من 12 شهر</div><div class="value">9.9%</div></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><h3>توقيت الالتحاق بسوق العمل (%)</h3><div class="chart"><canvas id="employmentTiming"></canvas></div></div>
+          <div class="panel"><h3>أعلى الكليات توظيفًا</h3><div class="hint">المحور يعكس الترتيب النسبي كما ورد في التقرير، دون أعداد توظيف تفصيلية لكل كلية.</div><div class="chart"><canvas id="employmentColleges"></canvas></div></div>
+        </div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text"><strong>70.5%</strong> من الخريجين الملتحقين بسوق العمل يلتحقون خلال أول 6 أشهر بعد التخرج أو قبله، بينما لا تتجاوز نسبة من يتأخر التحاقهم لأكثر من عام <strong>9.9%</strong>.</div></div>
+      </div>
+    </section>
+
+    <section id="retention" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">عدد الأنشطة</div><div class="value">83</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">إجمالي الساعات</div><div class="value">199.5</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">فترة التنفيذ</div><div class="value" style="font-size:25px">14 يناير – 26 يونيو</div><div class="sub">2025</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">تنفيذ مسائي</div><div class="value">92.8%</div></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><h3>تركّز الأنشطة الشهري</h3><div class="chart small"><canvas id="retentionConcentration"></canvas></div></div>
+          <div class="panel"><h3>توقيت تنفيذ الأنشطة</h3><div class="chart small"><canvas id="retentionEvening"></canvas></div></div>
+        </div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">أكثر من 9 من كل 10 أنشطة استبقاء تُنفَّذ مساءً، بينما يتركّز أكثر من نصف النشاط السنوي في شهرين فقط، وهو ما قد يستدعي توزيعًا أكثر انتظامًا عبر بقية العام الدراسي.</div></div>
+      </div>
+    </section>
+
+    <section id="activities" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">إجمالي الطلبات</div><div class="value">1,147</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">مستفيدون فريدون</div><div class="value">851</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">طلبات فعلية</div><div class="value">1,044</div></div>
+          <div class="kpi" style="--accent:var(--green-2)"><div class="label">الفترة</div><div class="value" style="font-size:25px">3 يناير – 11 أغسطس</div><div class="sub">2025</div></div>
+        </div>
+        <div class="grid two">
+          <div class="panel"><h3>التوزيع حسب الجنس</h3><div class="chart small"><canvas id="activitiesGender"></canvas></div></div>
+          <div class="panel"><h3>عدد الطلبات لكل مستفيد</h3><div class="chart small"><canvas id="activitiesByCount"></canvas></div></div>
+        </div>
+        <div class="panel"><h3>أعلى 5 كليات — طلبات الانضمام (Pareto)</h3><div class="hint">الفترة: 3 يناير – 11 أغسطس 2025</div><div class="chart tall"><canvas id="activitiesPareto"></canvas></div></div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">كليتا الحاسبات وتقنية المعلومات وإدارة الأعمال وحدهما تستحوذان على <strong>38.6%</strong> من طلبات الانضمام للأندية، وتبلغ النسبة التراكمية للكليات الخمس الأعلى <strong>71.1%</strong>، بينما تهيمن الطالبات على <strong>84.1%</strong> من إجمالي المشاركة.</div></div>
+      </div>
+    </section>
+
+    <section id="volunteer" class="section">
+      <div class="stack">
+        <div class="kpis">
+          <div class="kpi" style="--accent:var(--green)"><div class="label">الفرص التطوعية</div><div class="value">337</div></div>
+          <div class="kpi" style="--accent:var(--brown)"><div class="label">ساعات التطوع</div><div class="value">49,625</div></div>
+          <div class="kpi" style="--accent:var(--gold)"><div class="label">المتطوعون</div><div class="value">2,628</div></div>
+          <div class="kpi" style="--accent:var(--danger)"><div class="label">جهات غير نشطة</div><div class="value">15</div></div>
+        </div>
+        <div class="panel"><h3>أعلى 5 جهات مستفيدة من التطوع</h3><div class="chart"><canvas id="volunteerEntities"></canvas></div></div>
+        <div class="note">📍 يضم التقرير أيضًا <strong>15 جهة</strong> مصنّفة «غير نشطة» في العمل التطوعي خلال العام، تمثل فرصة لإعادة التفعيل.</div>
+        <div class="insight"><div class="tag">رؤية</div><div class="text">متوسط ساعات التطوع لكل متطوع يقارب <strong>19 ساعة سنويًا</strong>، ويتركز أعلى استقبال للمتطوعين في معهد تعليم اللغات وعمادة شؤون الطلاب.</div></div>
+      </div>
+    </section>
+
+    <footer>ملف HTML واحد — يدعم الوضع الفاتح والداكن — يمكن رفعه مباشرة على GitHub Pages.</footer>
+  </main>
+</div>
+
+<script>
+const SECTIONS = [
+  {id:'overview',label:'نظرة عامة',icon:'▦'},
+  {id:'scholarships',label:'المنح الطلابية',icon:'🎓'},
+  {id:'catering',label:'التغذية والإعاشة',icon:'🍽️'},
+  {id:'training',label:'مركز محترف',icon:'🏅'},
+  {id:'career',label:'الإرشاد المهني',icon:'🧭'},
+  {id:'employment',label:'توظيف الخريجين',icon:'💼'},
+  {id:'retention',label:'استبقاء الطلاب',icon:'👥'},
+  {id:'activities',label:'الأنشطة الطلابية',icon:'🎉'},
+  {id:'volunteer',label:'العمل التطوعي',icon:'🤝'},
+];
+const DATA = {
+  locations:[
+    {name:'تبوك',value:2399},{name:'تيماء',value:152},{name:'أملج',value:67},{name:'الوجه',value:63},{name:'ضباء',value:45},{name:'حقل',value:29},{name:'البدع',value:4}
+  ],
+  scholarships:{origin:[{name:'داخلية',value:990,pct:65.3},{name:'خارجية',value:525,pct:34.7}],status:[{name:'منتظم',value:694,pct:45.8},{name:'خريج',value:433,pct:28.6},{name:'متعثر',value:360,pct:23.8}]},
+  catering:{quality:[{name:'نظافة فريق العمل',value:4.72},{name:'صلاحية المواد الغذائية',value:5.0},{name:'نظافة المطبخ',value:4.23},{name:'نظافة الأرضيات',value:4.18},{name:'نظافة المكان',value:4.29},{name:'نظافة المستودع',value:3.91}],compliance:[{name:'مطابقة الأسعار للمنيو',value:100},{name:'سريان الإقامات',value:87.8},{name:'الشهادات الصحية',value:84.1},{name:'جولات مخالفات المتعهد',value:16.5}]},
+  training:{programs:[{name:'منتهية',value:9},{name:'لم تبدأ',value:8}],registrants:[{name:'مسجلون ببرامج منتهية',value:151},{name:'مسجلون ببرامج لم تبدأ',value:45}],qualification:[{name:'بكالوريوس',value:95},{name:'ماجستير',value:5}]},
+  career:{gender:[{name:'إناث',value:78},{name:'ذكور',value:22}],beneficiaries:[{name:'طلاب',value:1276},{name:'خريجون',value:1027},{name:'كادر إداري',value:40},{name:'كادر تعليمي',value:39}],topics:[{name:'البحث عن عمل',value:504},{name:'السيرة الذاتية',value:438},{name:'المقابلات الشخصية',value:299},{name:'المهارات الناعمة',value:236},{name:'LinkedIn',value:126}]},
+  employment:{timing:[{name:'قبل التخرج',value:26.6},{name:'خلال 6 أشهر',value:43.9},{name:'6-12 شهر',value:19.6},{name:'أكثر من 12 شهر',value:9.9}],topColleges:[{name:'الطب',rank:5},{name:'الهندسة',rank:4},{name:'الصيدلة',rank:3},{name:'العلوم الطبية التطبيقية',rank:2},{name:'إدارة الأعمال',rank:1}]},
+  retention:{concentration:[{name:'فبراير وأبريل',value:57.8},{name:'بقية الأشهر',value:42.2}],evening:[{name:'تنفيذ مسائي',value:92.8},{name:'أوقات أخرى',value:7.2}]},
+  activities:{gender:[{name:'طالبات',value:84.1},{name:'طلاب',value:15.9}],byCount:[{name:'طلب واحد',value:666},{name:'طلبان',value:126},{name:'3 طلبات',value:36},{name:'4 طلبات',value:12}],topColleges:[{name:'الحاسبات وتقنية المعلومات',value:20.1},{name:'إدارة الأعمال',value:18.5},{name:'الجامعية بأملج',value:11.5},{name:'العلوم',value:10.5},{name:'الشريعة والأنظمة',value:10.5}]},
+  volunteer:{topEntities:[{name:'معهد تعليم اللغات',value:56},{name:'عمادة شؤون الطلاب',value:52},{name:'الجامعية بالوجه',value:43},{name:'الهندسة',value:38},{name:'الجامعية بتيماء',value:35}]}
+};
+let currentSection='overview';
+let selectedLocation=null;
+let charts=[];
+const $ = (s)=>document.querySelector(s);
+const $$ = (s)=>Array.from(document.querySelectorAll(s));
+function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim();}
+function palette(){return [css('--green'),css('--gold'),css('--brown'),css('--green-2'),'#8AA399','#D9B858',css('--danger')];}
+function fmt(n){return typeof n==='number'? n.toLocaleString('ar-SA') : n;}
+function colors(){return {ink:css('--ink'),muted:css('--muted'),line:css('--line'),card:css('--card'),green:css('--green'),gold:css('--gold'),brown:css('--brown'),green2:css('--green-2'),danger:css('--danger'),tooltip:css('--tooltip'),tooltipText:css('--tooltipText')};}
+function baseOptions(extra={}){
+  const c=colors();
+  return {
+    responsive:true,
+    maintainAspectRatio:false,
+    locale:'ar-SA',
+    animation:{duration:650},
+    layout:{padding:{top:4,right:4,left:4,bottom:4}},
+    plugins:{
+      legend:{position:'bottom',rtl:true,labels:{color:c.ink,font:{family:'Cairo',size:12,weight:'700'},usePointStyle:true,boxWidth:9}},
+      tooltip:{rtl:true,backgroundColor:c.tooltip,titleColor:c.tooltipText,bodyColor:c.tooltipText,borderColor:c.line,borderWidth:1,titleFont:{family:'Cairo',weight:'800'},bodyFont:{family:'Cairo'},callbacks:{label:(ctx)=>` ${ctx.dataset.label||ctx.label}: ${fmt(ctx.parsed.y ?? ctx.parsed.x ?? ctx.parsed)}${ctx.dataset.suffix||''}`}}
+    },
+    scales:{
+      x:{grid:{color:c.line,drawBorder:false},ticks:{color:c.muted,font:{family:'Cairo',size:11,weight:'700'}}},
+      y:{grid:{color:c.line,drawBorder:false},ticks:{color:c.muted,font:{family:'Cairo',size:11,weight:'700'}}}
+    },
+    ...extra
+  }
+}
+function destroyCharts(){charts.forEach(ch=>ch.destroy()); charts=[];}
+function makeChart(id,type,data,options={}){
+  const el=document.getElementById(id);
+  if(!el || !window.Chart) return;
+  charts.push(new Chart(el,{type,data,options:baseOptions(options)}));
+}
+function doughnut(id,arr,suffix=''){
+  makeChart(id,'doughnut',{
+    labels:arr.map(d=>d.name),
+    datasets:[{data:arr.map(d=>d.value),backgroundColor:palette(),borderColor:css('--card'),borderWidth:3,suffix}]
+  },{cutout:'58%',scales:{x:{display:false},y:{display:false}}});
+}
+function verticalBar(id,arr,key='value',suffix='',hideLegend=true){
+  makeChart(id,'bar',{
+    labels:arr.map(d=>d.name),
+    datasets:[{label:'القيمة',data:arr.map(d=>d[key]),backgroundColor:palette().slice(0,arr.length),borderRadius:10,suffix}]
+  },{plugins:{legend:{display:!hideLegend}},scales:{x:{grid:{display:false}},y:{beginAtZero:true}}});
+}
+function horizontalBar(id,arr,key='value',suffix='',colorsArr=null,max=null){
+  const c=colors();
+  makeChart(id,'bar',{
+    labels:arr.map(d=>d.name),
+    datasets:[{label:'القيمة',data:arr.map(d=>d[key]),backgroundColor:colorsArr || palette().slice(0,arr.length),borderRadius:10,suffix}]
+  },{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,max:max||undefined,grid:{color:c.line}},y:{grid:{display:false}}}});
+}
+function renderNav(){
+  ['desktopNav','mobileNav'].forEach(id=>{
+    const nav=document.getElementById(id);
+    nav.innerHTML=SECTIONS.map(s=>`<button data-target="${s.id}" class="${s.id===currentSection?'active':''}"><span class="ico">${s.icon}</span><span>${s.label}</span></button>`).join('');
+    nav.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>showSection(btn.dataset.target)));
+  });
+}
+function renderNecklace(){
+  const svg=$('#necklaceSvg'); if(!svg) return;
+  const c=colors(), loc=DATA.locations, max=Math.max(...loc.map(l=>l.value));
+  const w=760,h=118,pad=54, step=(w-pad*2)/(loc.length-1), cy=48;
+  let html=`<line x1="${pad}" y1="${cy}" x2="${w-pad}" y2="${cy}" stroke="${c.gold}" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>`;
+  loc.forEach((l,i)=>{
+    const r=7+(l.value/max)*19, cx=pad+step*i;
+    html += `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.green}" opacity="${selectedLocation && selectedLocation!==l.name ? .25 : 1}"/>
+    <text x="${cx}" y="${cy+r+21}" text-anchor="middle" font-size="13" font-family="Cairo" font-weight="700" fill="${c.ink}">${l.name}</text>
+    <text x="${cx}" y="${cy-r-8}" text-anchor="middle" font-size="11" font-family="Cairo" font-weight="700" fill="${c.muted}">${fmt(l.value)}</text></g>`;
+  });
+  svg.innerHTML=html;
+}
+function renderQuality(){
+  const box=$('#qualityGrid'); if(!box) return;
+  box.innerHTML=DATA.catering.quality.map(q=>{
+    let color = q.value >= 4.5 ? css('--green') : q.value >= 4 ? css('--gold') : css('--danger');
+    return `<div class="gauge"><div class="dial" style="--score:${q.value};--gcolor:${color}"><b>${q.value.toFixed(2)}</b></div><span>${q.name}</span></div>`;
+  }).join('');
+}
+function renderLocationButtons(){
+  const box=$('#locationButtons'); if(!box) return;
+  box.innerHTML=DATA.locations.map(l=>`<button class="chip ${selectedLocation===l.name?'active':''}" data-loc="${l.name}">${l.name}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selectedLocation = selectedLocation===b.dataset.loc ? null : b.dataset.loc; renderLocationButtons(); renderActiveCharts(); renderNecklace();}));
+}
+function paretoData(arr){let run=0; return arr.map(d=>{run += d.value; return {...d,cumulative:+run.toFixed(1)}})}
+function renderActiveCharts(){
+  destroyCharts();
+  renderQuality(); renderLocationButtons(); renderNecklace();
+  const p=palette(), c=colors();
+  if(currentSection==='scholarships'){
+    doughnut('schOrigin',DATA.scholarships.origin);
+    horizontalBar('schStatus',DATA.scholarships.status,'value','', [c.green,c.gold,c.brown]);
+  }
+  if(currentSection==='catering'){
+    horizontalBar('cateringCompliance',DATA.catering.compliance,'value','%', [c.green,c.green2,c.gold,c.danger],100);
+  }
+  if(currentSection==='training'){
+    doughnut('trainingPrograms',DATA.training.programs);
+    doughnut('trainingRegistrants',DATA.training.registrants);
+    doughnut('trainingQualification',DATA.training.qualification,'%');
+  }
+  if(currentSection==='career'){
+    const locColors=DATA.locations.map(l=> selectedLocation && selectedLocation!==l.name ? css('--line') : c.green);
+    horizontalBar('careerLocations',DATA.locations,'value','',locColors);
+    doughnut('careerGender',DATA.career.gender,'%');
+    verticalBar('careerBeneficiaries',DATA.career.beneficiaries);
+    horizontalBar('careerTopics',DATA.career.topics,'value','', [c.brown,c.brown,c.brown,c.brown,c.brown]);
+  }
+  if(currentSection==='employment'){
+    verticalBar('employmentTiming',DATA.employment.timing,'value','%');
+    horizontalBar('employmentColleges',DATA.employment.topColleges,'rank','', [c.green,c.green2,c.gold,c.brown,c.danger],5);
+  }
+  if(currentSection==='retention'){
+    doughnut('retentionConcentration',DATA.retention.concentration,'%');
+    doughnut('retentionEvening',DATA.retention.evening,'%');
+  }
+  if(currentSection==='activities'){
+    doughnut('activitiesGender',DATA.activities.gender,'%');
+    verticalBar('activitiesByCount',DATA.activities.byCount);
+    const arr=paretoData(DATA.activities.topColleges);
+    makeChart('activitiesPareto','bar',{
+      labels:arr.map(d=>d.name),
+      datasets:[
+        {type:'bar',label:'نسبة الطلبات',data:arr.map(d=>d.value),backgroundColor:c.green,borderRadius:10,yAxisID:'y',suffix:'%'},
+        {type:'line',label:'النسبة التراكمية',data:arr.map(d=>d.cumulative),borderColor:c.gold,backgroundColor:c.gold,borderWidth:3,tension:.35,pointRadius:4,yAxisID:'y1',suffix:'%'}
+      ]
+    },{scales:{x:{ticks:{maxRotation:20,minRotation:0}},y:{beginAtZero:true,position:'left',ticks:{callback:v=>v+'%'}},y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}});
+  }
+  if(currentSection==='volunteer'){
+    horizontalBar('volunteerEntities',DATA.volunteer.topEntities,'value','',p.slice(0,5));
+  }
+}
+function showSection(id){
+  currentSection=id;
+  $$('.section').forEach(s=>s.classList.toggle('active',s.id===id));
+  $('#pageTitle').textContent = SECTIONS.find(s=>s.id===id).label;
+  renderNav();
+  setTimeout(renderActiveCharts,40);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setTheme(dark){
+  document.body.classList.toggle('dark',dark);
+  localStorage.setItem('utDashboardTheme',dark?'dark':'light');
+  $('#themeToggle').textContent = dark ? '☀️ الوضع الفاتح' : '🌙 الوضع الداكن';
+  renderActiveCharts();
+}
+function init(){
+  const saved=localStorage.getItem('utDashboardTheme');
+  renderNav();
+  if(saved==='dark') document.body.classList.add('dark');
+  $('#themeToggle').textContent = document.body.classList.contains('dark') ? '☀️ الوضع الفاتح' : '🌙 الوضع الداكن';
+  $('#themeToggle').addEventListener('click',()=>setTheme(!document.body.classList.contains('dark')));
+  renderQuality(); renderLocationButtons(); renderNecklace(); renderActiveCharts();
+}
+window.addEventListener('load',init);
+window.addEventListener('resize',()=>{clearTimeout(window.__resizeCharts); window.__resizeCharts=setTimeout(renderActiveCharts,160);});
+</script>
+</body>
+</html>
